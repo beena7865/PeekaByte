@@ -1,0 +1,14 @@
+﻿streamlit
+numpy
+Pillow
+fpdf2
+scipy
+matplotlib
+pydub
+opencv-python
+pikepdf
+msoffcrypto-tool
+PyMuPDF
+openpyxl
+python-docx
+pandas
