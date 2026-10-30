@@ -1,5 +1,5 @@
 """
-PeekaByte — PDF Report Generator
+PeekaByte - PDF Report Generator
 Builds a styled PDF from the analysis results stored in session_state.
 """
 
@@ -117,13 +117,13 @@ def build_pdf(filename, filesize, report, meta=None, pic=None,
 
     Parameters
     ----------
-    filename  : str           — original file name
-    filesize  : int           — file size in bytes
-    report    : dict          — from analyze_bytes(), has "stages", "verdict", etc.
-    meta      : dict or None  — from read_metadata()
-    pic       : dict or None  — from find_picture()
-    png_check : dict or None  — from check_png()
-    deep      : dict or None  — from deep_scan()
+    filename  : str           - original file name
+    filesize  : int           - file size in bytes
+    report    : dict          - from analyze_bytes(), has "stages", "verdict", etc.
+    meta      : dict or None  - from read_metadata()
+    pic       : dict or None  - from find_picture()
+    png_check : dict or None  - from check_png()
+    deep      : dict or None  - from deep_scan()
 
     Returns
     -------
@@ -165,7 +165,7 @@ def build_pdf(filename, filesize, report, meta=None, pic=None,
         pdf.section("Analysis Results")
         for stage in stages:
             name = stage.get("name", "Unknown")
-            status = stage.get("status", "—")
+            status = stage.get("status", "-")
             summary = stage.get("summary", "")
             # Pick color based on status
             s_low = status.lower()
@@ -227,7 +227,7 @@ def build_pdf(filename, filesize, report, meta=None, pic=None,
     if png_check:
         pdf.section("PNG Structure Check")
         if png_check.get("ok"):
-            pdf.row("Status", "Valid — signature, chunks and CRCs are correct", pdf.GREEN)
+            pdf.row("Status", "Valid - signature, chunks and CRCs are correct", pdf.GREEN)
         else:
             pdf.row("Status", "Problems found", pdf.RED)
             for p in png_check.get("problems", []):
@@ -266,14 +266,14 @@ def export_any_tab(tab_name, filename, data_dict):
     """
     Universal PDF export for any tab.
     
-    tab_name: str — "Forensics", "Compare", "Decrypt", "QR Scanner", etc.
-    filename: str — uploaded file name
-    data_dict: dict — key-value pairs to display
+    tab_name: str - "Forensics", "Compare", "Decrypt", "QR Scanner", etc.
+    filename: str - uploaded file name
+    data_dict: dict - key-value pairs to display
     """
     pdf = PeekaBytePDF()
     pdf.alias_nb_pages()
     pdf.add_page()
-    pdf.section(f"PeekaByte — {tab_name} Report")
+    pdf.section(f"PeekaByte - {tab_name} Report")
     pdf.row("Source File", safe(filename))
 
     from datetime import datetime

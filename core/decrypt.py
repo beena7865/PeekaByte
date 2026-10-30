@@ -1,5 +1,5 @@
 """
-PeekaByte — Decrypt / Password Cracker
+PeekaByte - Decrypt / Password Cracker
 Cracks password-protected files (PDF, ZIP, DOCX, XLSX)
 and extracts password-protected steganography.
 """
@@ -116,7 +116,7 @@ def detect_file_type(data, filename):
             return "pptx"
         return "zip"
     if data[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":
-        # OLE2 format — old Office
+        # OLE2 format - old Office
         if ext in ("doc", "docx"):
             return "docx"
         if ext in ("xls", "xlsx"):
@@ -164,15 +164,18 @@ def crack_pdf(data, password_list, progress_callback=None):
                     text_parts.append(page.extract_text() if hasattr(page, 'extract_text') else "")
                 except Exception:
                     pass
-            pdf.close()
             text = "\n".join(text_parts).strip()
             if not text:
                 text = "(PDF opened but no text could be extracted - may contain images only)"
             # Save decrypted PDF bytes
-            out = io.BytesIO()
-            pdf.save(out)
-            pdf.close()
-            return pw, text, out.getvalue()
+            try:
+                out = io.BytesIO()
+                pdf.save(out)
+                pdf.close()
+                return pw, text, out.getvalue()
+            except Exception:
+                pdf.close()
+                return pw, text, None
         except pikepdf._core.PasswordError:
             continue
         except Exception:
@@ -364,15 +367,7 @@ def full_decrypt(data, filename, user_password=None, progress_callback=None, onl
     if only_user_password and user_password:
         passwords = [user_password]
     elif custom_passwords:
-        passwords = custom_passwords + _load_passwords()
-        # Remove duplicates keeping order
-        seen = set()
-        unique = []
-        for p in passwords:
-            if p not in seen:
-                seen.add(p)
-                unique.append(p)
-        passwords = unique
+        passwords = list(custom_passwords)
     else:
         passwords = _load_passwords()
         if user_password:
@@ -483,6 +478,6 @@ def full_decrypt(data, filename, user_password=None, progress_callback=None, onl
 
     # --- Unknown ---
     else:
-        result["method"] = f"File type '{ftype}' — no cracking method available"
+        result["method"] = f"File type '{ftype}' - no cracking method available"
 
     return result

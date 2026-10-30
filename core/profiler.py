@@ -367,6 +367,9 @@ def generate_profile_passwords(profile):
             for trunc in _truncations(word):
                 passwords.add(trunc + date_part)
                 passwords.add(trunc.capitalize() + date_part)
+                passwords.add(trunc.upper() + date_part)
+                passwords.add(date_part + trunc)
+                passwords.add(date_part + trunc.upper())
             # Leet + date
             for leet in _leet_variants(word)[:3]:
                 passwords.add(leet + date_part)

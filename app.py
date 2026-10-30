@@ -22,6 +22,7 @@ from core.fingerprint import check_extension_match
 from core.qr_scanner import scan_qr, draw_qr_boxes
 from core.carver import carve_file
 from core.malware_scan import analyze_malware
+from core.extractor import extract_all
 from core.pdf_export import build_pdf
 
 TYPES = ["png", "jpg", "jpeg", "bmp", "webp", "gif", "wav", "tif", "tiff", "pdf", "heic", "heif", "avif",
@@ -236,13 +237,13 @@ with tab_scan:
                     # Spectrogram
                     if audio_result.get("spectrogram"):
                         st.image(audio_result["spectrogram"],
-                                 caption="Full spectrogram — look for hidden text or unusual patterns",
+                                 caption="Full spectrogram - look for hidden text or unusual patterns",
                                  use_container_width=True)
 
                     # LSB spectrogram
                     if audio_result.get("lsb_spectrogram"):
                         st.image(audio_result["lsb_spectrogram"],
-                                 caption="LSB-only spectrogram — patterns here suggest hidden data in the last bits",
+                                 caption="LSB-only spectrogram - patterns here suggest hidden data in the last bits",
                                  use_container_width=True)
 
                     # Chi-square result
@@ -289,6 +290,24 @@ with tab_scan:
                 )
             except Exception as e:
                 st.warning(f"PDF export failed: {e}")
+
+        # ---- Data Extraction ----
+        st.markdown("### Extracted Data")
+        st.caption("Attempting to extract hidden data using multiple methods...")
+        try:
+            extractions = extract_all(upload.getvalue(), upload.name)
+            if extractions:
+                st.success(f"Found {len(extractions)} hidden data item(s)!")
+                for i, ex in enumerate(extractions):
+                    with st.expander(f"🔍 {ex['method']} - {ex['key']}", expanded=(i == 0)):
+                        st.write(f"**Method:** {ex['method']}")
+                        st.write(f"**Type:** {ex['key']}")
+                        st.code(ex["value"], language=None)
+            else:
+                st.info("No extractable hidden data found using known methods. "
+                        "The file may use an unknown or encrypted hiding method.")
+        except Exception as e:
+            st.warning(f"Extraction error: {e}")
 
 # ------------------------------------------------------------ hide
 with tab_hide:
@@ -340,6 +359,20 @@ with tab_hide:
     st.caption("Images are saved as PNG (a JPEG stays a JPEG). Do not screenshot, re-save or "
                "send the result through apps that recompress images, or the message is lost.")
 
+
+        # ---- Hide tab PDF export ----
+    st.markdown("---")
+    try:
+            from core.pdf_export import export_any_tab
+            hide_pdf_data = {
+                "Output File": name,
+                "Password Protected": "Yes" if st.session_state.get("hidden_pw") else "No",
+            }
+            hide_pdf = export_any_tab("Hide Message", name, hide_pdf_data)
+            st.download_button("📄 Download Hide Report PDF", hide_pdf,
+                               file_name="Hide_Report.pdf", mime="application/pdf", key="pdf_hide")
+    except Exception as e:
+            st.warning(f"PDF export failed: {e}")
 
 # ------------------------------------------------------------ compare
 with tab_compare:
@@ -405,7 +438,7 @@ with tab_compare:
 # ------------------------------------------------------------ forensics
 with tab_forensics:
     st.caption("Upload any file to scan for hidden/embedded content, suspicious strings, "
-               "and — for photos — a full forensic timeline showing when it was taken, "
+               "and - for photos - a full forensic timeline showing when it was taken, "
                "edited, and where.")
     forensics_file = st.file_uploader(
         "Upload a file to inspect",
@@ -443,9 +476,9 @@ with tab_forensics:
         if time.get("device"):
             d = time["device"]
             cols = st.columns(3)
-            cols[0].metric("Make", d["make"] or "—")
-            cols[1].metric("Model", d["model"] or "—")
-            cols[2].metric("Software", d["software"] or "—")
+            cols[0].metric("Make", d["make"] or "-")
+            cols[1].metric("Model", d["model"] or "-")
+            cols[2].metric("Software", d["software"] or "-")
 
         if time.get("timeline"):
             for event in time["timeline"]:
@@ -464,7 +497,7 @@ with tab_forensics:
         if time.get("gps"):
             g = time["gps"]
             st.subheader("📍 GPS location")
-            st.markdown(f"Lat: `{g['lat']}` — Lon: `{g['lon']}`")
+            st.markdown(f"Lat: `{g['lat']}` - Lon: `{g['lon']}`")
             st.markdown(f"[Open in Google Maps]({g['maps_url']})")
         if time.get("size_check"):
             s = time["size_check"]
@@ -473,7 +506,7 @@ with tab_forensics:
             col1.metric("File size", f"{s['file_size']:,} bytes")
             col2.metric("Dimensions", s["dimensions"])
             if s["anomaly"]:
-                st.warning("⚠️ File is unusually large for its dimensions — possible hidden data.")
+                st.warning("⚠️ File is unusually large for its dimensions - possible hidden data.")
             else:
                 st.success("✅ File size is normal for its dimensions.")
 
@@ -532,7 +565,7 @@ with tab_decrypt:
               "wav", "mp3", "flac", "ogg", "m4a"],
         key="decrypt_upload")
 
-    user_pw = st.text_input("Enter password (optional — leave blank to try cracking without it)",
+    user_pw = st.text_input("Enter password (optional - leave blank to try cracking without it)",
                             type="password", key="decrypt_pw")
 
     with st.expander("Generate passwords from person info"):
@@ -643,7 +676,7 @@ with tab_decrypt:
                     st.caption("The password you entered is incorrect.")
                 elif r.get("attempts"):
                     st.caption(f"Tried {r['attempts']:,} passwords from {r['total_passwords']:,} in the dictionary.")
-                st.info("You can add more password lists to D:\\stego-project\\wordlists\\ — "
+                st.info("You can add more password lists to D:\\stego-project\\wordlists\\ - "
                         "any .txt file with one password per line will be loaded automatically. "
                         "Try downloading rockyou.txt from GitHub for 14 million passwords.")
 
@@ -860,7 +893,7 @@ with tab_cases:
                             icon = "⚠️"
                         else:
                             icon = "🚨"
-                        st.write(f"{icon} **{f['filename']}** — {v}")
+                        st.write(f"{icon} **{f['filename']}** - {v}")
                         st.caption(f"Size: {int(f.get('file_size', 0)):,} bytes | SHA-256: `{f.get('sha256', 'N/A')}` | Scanned: {f.get('scanned', 'N/A')}")
                         if f.get("stages_summary"):
                             for part in f["stages_summary"].split(" | "):
@@ -871,6 +904,39 @@ with tab_cases:
                 if st.button(f"Delete {case['id']}", key=f"del_{case['id']}"):
                     delete_case(case["id"])
                     st.rerun()
+
+
+        # ---- Cases PDF export (full report) ----
+        st.markdown("---")
+        try:
+            from core.pdf_export import PeekaBytePDF, safe
+            pdf = PeekaBytePDF()
+            pdf.alias_nb_pages()
+            pdf.add_page()
+            pdf.section("Cases Report")
+            pdf.row("Total Cases", str(len(cases)))
+            pdf.ln(4)
+            for case in cases:
+                pdf.section(safe(f"{case['id']}: {case['name']}"))
+                pdf.row("Created", safe(case.get("created", "")))
+                if case.get("description"):
+                    pdf.row("Description", safe(case["description"]))
+                pdf.row("Files", str(len(case.get("files", []))))
+                for f in case.get("files", []):
+                    v = f.get("verdict", "Unknown")
+                    pdf.row(safe(f["filename"]), safe(v))
+                    pdf.set_font("Helvetica", "", 9)
+                    pdf.cell(10)
+                    pdf.cell(0, 5, safe(f"Size: {int(f.get('file_size', 0)):,} bytes | SHA-256: {f.get('sha256', 'N/A')}"), ln=True)
+                    if f.get("stages_summary"):
+                        pdf.cell(10)
+                        pdf.cell(0, 5, safe(f.get("stages_summary", "")[:100]), ln=True)
+                pdf.ln(3)
+            cases_pdf = bytes(pdf.output())
+            st.download_button("📄 Download Cases PDF", cases_pdf,
+                               file_name="Cases_Report.pdf", mime="application/pdf", key="pdf_cases")
+        except Exception as e:
+            st.warning(f"PDF export failed: {e}")
 
 # ------------------------------------------------------------ qr scanner
 with tab_qr:
@@ -975,7 +1041,7 @@ with tab_carve:
                 else:
                     size_str = f"{size_kb:.1f} KB"
 
-                with st.expander(f"File {i+1}: {f['name']} ({f['extension']}) — {size_str} at position {f['position']:,}"):
+                with st.expander(f"File {i+1}: {f['name']} ({f['extension']}) - {size_str} at position {f['position']:,}"):
                     st.write(f"**Type:** {f['name']}")
                     st.write(f"**Extension:** {f['extension']}")
                     st.write(f"**Size:** {f['size']:,} bytes ({size_str})")
@@ -1007,7 +1073,7 @@ with tab_carve:
             except Exception:
                 pass
         else:
-            st.success("No hidden files found — this file appears clean.")
+            st.success("No hidden files found - this file appears clean.")
 
 # ------------------------------------------------------------ malware scan
 with tab_malware:
@@ -1087,7 +1153,7 @@ with tab_malware:
             st.markdown("### High-Entropy Sections")
             st.caption("Sections with entropy above 7.5 may contain encrypted or packed data.")
             for s in r["suspicious_sections"][:10]:
-                st.write(f"Offset **{s['offset']:,}** — Entropy: **{s['entropy']:.2f}** — Size: {s['size']:,} bytes")
+                st.write(f"Offset **{s['offset']:,}** - Entropy: **{s['entropy']:.2f}** - Size: {s['size']:,} bytes")
 
         # No findings
         if not r["executable_findings"] and not r["string_findings"] and not r["suspicious_sections"]:
@@ -1166,7 +1232,7 @@ with tab_batch:
             else:
                 icon = "🚨"
 
-            with st.expander(f"{icon}  {r['filename']}  —  Score: {r['score']}  —  {v}"):
+            with st.expander(f"{icon}  {r['filename']}  -  Score: {r['score']}  -  {v}"):
                 st.write(f"**Verdict:** {v}")
                 st.write(f"**Suspicion score:** {r['score']}/100")
                 st.write(f"**File size:** {r['size']:,} bytes")
@@ -1229,7 +1295,7 @@ with tab_history:
                 icon = "⚠️"
             else:
                 icon = "🚨"
-            with st.expander(f"{icon}  {entry['filename']}  —  {entry['timestamp']}"):
+            with st.expander(f"{icon}  {entry['filename']}  -  {entry['timestamp']}"):
                 st.write(f"**Verdict:** {verdict}")
                 st.write(f"**File size:** {int(entry.get('file_size', 0)):,} bytes")
                 st.write(f"**SHA-256:** `{entry.get('sha256', 'N/A')}`")
@@ -1241,6 +1307,34 @@ with tab_history:
         if st.button("Clear all scan history"):
             clear_log()
             st.rerun()
+
+        # ---- Scan History PDF export ----
+        st.markdown("---")
+        try:
+            from core.pdf_export import PeekaBytePDF, safe
+            pdf = PeekaBytePDF()
+            pdf.alias_nb_pages()
+            pdf.add_page()
+            pdf.section("Scan History Report")
+            pdf.row("Total Scans", str(len(history)))
+            pdf.ln(4)
+            for entry in history:
+                verdict = entry.get("verdict", "Unknown")
+                pdf.row(safe(entry.get("filename", "?")), safe(verdict))
+                pdf.set_font("Helvetica", "", 9)
+                pdf.cell(10)
+                pdf.cell(0, 5, safe(f"Size: {int(entry.get('file_size', 0)):,} bytes | SHA-256: {entry.get('sha256', 'N/A')}"), ln=True)
+                pdf.cell(10)
+                pdf.cell(0, 5, safe(f"Scanned: {entry.get('timestamp', 'N/A')}"), ln=True)
+                if entry.get("stages_summary"):
+                    pdf.cell(10)
+                    pdf.cell(0, 5, safe(entry["stages_summary"][:100]), ln=True)
+                pdf.ln(2)
+            history_pdf = bytes(pdf.output())
+            st.download_button("📄 Download History PDF", history_pdf,
+                               file_name="Scan_History_Report.pdf", mime="application/pdf", key="pdf_history")
+        except Exception as e:
+            st.warning(f"PDF export failed: {e}")
 
 # ============================================================
 # PDF EXPORT BUTTONS FOR ALL TABS
