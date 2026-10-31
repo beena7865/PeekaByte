@@ -68,7 +68,46 @@ Organize your forensic investigations into cases. Group related files, add descr
 
 ## Screenshots
 
-> Screenshots coming soon
+## Screenshots
+
+### Preview
+![Preview](screenshots/preview.png)
+
+### Analyze
+![Analyze](screenshots/analyze%20file%20tab.png)
+
+### Hide Message
+![Hide Message](screenshots/hide%20a%20message%20tab.png)
+
+### Compare
+![Compare](screenshots/compare%20two%20files%20tab.png)
+
+### Forensics
+![Forensics](screenshots/forensics%20tab.png)
+
+### Decrypt
+![Decrypt](screenshots/decrypt%20tab.png)
+
+### CUPP (Profile Attack)
+![CUPP](screenshots/CUPP%20of%20decrypt%20tab.png)
+
+### QR Scanner
+![QR Scanner](screenshots/QR%20scanner%20tab.png)
+
+### File Carver
+![File Carver](screenshots/file%20carver%20tab.png)
+
+### Malware Scan
+![Malware Scan](screenshots/malware%20scan%20tab.png)
+
+### Batch Scan
+![Batch Scan](screenshots/batch%20scan%20tab.png)
+
+### Scan History
+![Scan History](screenshots/scan%20history%20tab.png)
+
+### Cases
+![Cases](screenshots/cases%20tab.png)
 
 ---
 
