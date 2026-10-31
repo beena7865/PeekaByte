@@ -68,8 +68,6 @@ Organize your forensic investigations into cases. Group related files, add descr
 
 ## Screenshots
 
-## Screenshots
-
 ### Preview
 ![Preview](screenshots/preview.png)
 
