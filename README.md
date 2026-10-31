@@ -47,11 +47,27 @@ Organize your forensic investigations into cases. Group related files, add descr
 
 ## How to Use
 
-1. Download the latest release from the [Releases](../../releases) section
-2. Extract the ZIP file
-3. Run `PeekaByte.exe`
-4. The tool will open in your web browser automatically
-5. Start analyzing!
+### Windows
+
+1. Download the ZIP from the [Releases](../../releases) section
+2. Extract the ZIP file to any folder
+3. Double-click `PeekaByte.exe`
+4. A terminal window will open — **do not close it**
+5. Your browser will open automatically with the tool
+6. If it doesn't, go to `http://localhost:8501` manually
+7. Start analyzing!
+
+> **Note:** Windows may show a security warning the first time. Click **"More info"** → **"Run anyway"** to continue.
+
+### Linux
+
+The current release is built for Windows. Linux users can run it using Wine:
+
+1. Install Wine: `sudo apt install wine` (Debian/Ubuntu) or `sudo dnf install wine` (Fedora)
+2. Download the ZIP from the [Releases](../../releases) section
+3. Extract it: `unzip PeekaByte.zip`
+4. Run: `wine PeekaByte.exe`
+5. Open `http://localhost:8501` in your browser
 
 ---
 
