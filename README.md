@@ -58,14 +58,9 @@ Organize your forensic investigations into cases. Group related files, add descr
 
 > **Note:** Windows may show a security warning the first time. Click **"More info"** → **"Run anyway"** to continue.
 
-### Linux (using Wine)
+### Linux / macOS
 
-1. Install Wine:
-   - Debian/Ubuntu: `sudo apt install wine`
-   - Fedora: `sudo dnf install wine`
-2. Download and extract `PeekaByte-v1.0.zip` from [Releases](../../releases)
-3. Run: `wine PeekaByte.exe`
-4. Open `http://localhost:8501` in your browser
+Currently available for Windows only. Linux and macOS support will be added in future releases.
 
 ---
 
