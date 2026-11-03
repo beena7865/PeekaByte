@@ -955,8 +955,14 @@ with tab_qr:
     if qr_file is not None and st.button("Scan QR Code", key="qr_go"):
         data = qr_file.getvalue()
         with st.spinner("Scanning for QR codes..."):
-            qr = scan_qr(data)
-            annotated = draw_qr_boxes(data)
+            try:
+                qr = scan_qr(data)
+            except Exception:
+                qr = {"found": False, "codes": [], "count": 0, "note": "QR scanning failed on this image."}
+            try:
+                annotated = draw_qr_boxes(data)
+            except Exception:
+                annotated = None
         st.session_state["qr_result"] = (qr_file.name, qr, annotated)
 
     qr_saved = st.session_state.get("qr_result")
