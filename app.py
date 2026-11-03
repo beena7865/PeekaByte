@@ -165,6 +165,7 @@ with tab_scan:
                     st.session_state["report"] = None
                     st.session_state["deep"] = None
                     st.error(f"Could not analyze this file: {error}")
+        data = upload.getvalue()
         saved = st.session_state.get("report")
         if saved and saved[0] == upload.name and saved[1] == upload.size:
             st.markdown(ui.report_html(saved[2]), unsafe_allow_html=True)
