@@ -205,36 +205,33 @@ def scan_qr(data):
         img_array = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
 
     results = []
-    detector = cv2.QRCodeDetector()
 
-    # Try original image
-    retval, decoded_info, points, _ = detector.detectAndDecodeMulti(img_array)
-    if retval and decoded_info:
-        for i, text in enumerate(decoded_info):
-            if text:
-                pts = points[i] if points is not None and i < len(points) else None
-                results.append({"text": text, "points": pts})
-
-    # Try grayscale
-    if not results:
-        gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY) if len(img_array.shape) == 3 else img_array
-        retval, decoded_info, points, _ = detector.detectAndDecodeMulti(gray)
-        if retval and decoded_info:
-            for i, text in enumerate(decoded_info):
-                if text:
-                    pts = points[i] if points is not None and i < len(points) else None
-                    results.append({"text": text, "points": pts})
-
-    # Try enhanced contrast
-    if not results:
-        gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY) if len(img_array.shape) == 3 else img_array
-        enhanced = cv2.equalizeHist(gray)
-        retval, decoded_info, points, _ = detector.detectAndDecodeMulti(enhanced)
-        if retval and decoded_info:
-            for i, text in enumerate(decoded_info):
-                if text:
-                    pts = points[i] if points is not None and i < len(points) else None
-                    results.append({"text": text, "points": pts})
+    # Try OpenCV QR detector
+    try:
+        detector = cv2.QRCodeDetector()
+        for attempt_img in [img_array]:
+            try:
+                retval, decoded_info, points, _ = detector.detectAndDecodeMulti(attempt_img)
+                if retval and decoded_info:
+                    for i, text in enumerate(decoded_info):
+                        if text:
+                            pts = points[i] if points is not None and i < len(points) else None
+                            results.append({"text": text, "points": pts})
+            except Exception:
+                pass
+            if not results:
+                try:
+                    gray = cv2.cvtColor(attempt_img, cv2.COLOR_BGR2GRAY) if len(attempt_img.shape) == 3 else attempt_img
+                    retval, decoded_info, points, _ = detector.detectAndDecodeMulti(gray)
+                    if retval and decoded_info:
+                        for i, text in enumerate(decoded_info):
+                            if text:
+                                results.append({"text": text, "points": None})
+                except Exception:
+                    pass
+    except Exception:
+        pass
+      
 
     # Try pyzbar as fallback (much better with real-world photos)
     if not results and HAS_PYZBAR:
