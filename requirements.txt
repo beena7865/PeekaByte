@@ -5,7 +5,7 @@ fpdf2
 scipy
 matplotlib
 pydub
-opencv-python
+opencv-python-headless
 pikepdf
 msoffcrypto-tool
 PyMuPDF
