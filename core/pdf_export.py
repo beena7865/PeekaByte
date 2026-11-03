@@ -11,7 +11,7 @@ import tempfile
 
 def safe(text):
     """Replace Unicode characters that Helvetica cannot print."""
-    return (str(text)
+    text = (str(text)
             .replace("\u2014", "-")
             .replace("\u2013", "-")
             .replace("\u2018", "'")
@@ -19,8 +19,8 @@ def safe(text):
             .replace("\u201c", '"')
             .replace("\u201d", '"')
             .replace("\u2026", "...")
-            .replace("\u00b0", " deg")
-            )
+            .replace("\u00b0", " deg"))
+    return text.encode("ascii", "ignore").decode("ascii")
 
 class PeekaBytePDF(FPDF):
 
@@ -281,24 +281,35 @@ def export_any_tab(tab_name, filename, data_dict):
     pdf.ln(3)
 
     for key, value in data_dict.items():
+      try:
         if key.startswith("__section__"):
             pdf.section(safe(str(value)))
         elif key.startswith("__error__"):
-            pdf.result_row("Warning", safe(str(value)), pdf.RED)
+            pdf.set_font("Helvetica", "B", 10)
+            pdf.set_x(10)
+            pdf.multi_cell(0, 6, safe("Warning: " + str(value))[:200])
         elif key.startswith("__success__"):
-            pdf.result_row("Result", safe(str(value)), pdf.GREEN)
+            pdf.set_font("Helvetica", "B", 10)
+            pdf.set_x(10)
+            pdf.multi_cell(0, 6, safe("Result: " + str(value))[:200])
         elif key.startswith("__warning__"):
-            pdf.result_row("Alert", safe(str(value)), pdf.ORANGE)
+            pdf.set_font("Helvetica", "B", 10)
+            pdf.set_x(10)
+            pdf.multi_cell(0, 6, safe("Alert: " + str(value))[:200])
         elif key.startswith("__list__"):
             items = value if isinstance(value, list) else [value]
             for item in items:
                 pdf.set_font("Helvetica", "", 9)
-                pdf.cell(10)
-                pdf.multi_cell(0, 6, safe(f"- {item}"))
+                pdf.set_x(10)
+                pdf.multi_cell(0, 6, safe(f"  - {item}")[:200])
         elif key.startswith("__space__"):
             pdf.ln(4)
         else:
-            pdf.row(safe(str(key)), safe(str(value)[:200]))
+            pdf.set_font("Helvetica", "", 10)
+            pdf.set_x(10)
+            pdf.multi_cell(0, 6, safe(str(key) + ": " + str(value))[:250])
+      except Exception:
+            continue
 
     pdf.ln(5)
     pdf.set_font("Helvetica", "I", 9)

@@ -365,15 +365,16 @@ with tab_hide:
     try:
             from core.pdf_export import export_any_tab
             hide_pdf_data = {
-                "Output File": name,
+        "Output File": "Hidden_output",
                 "Password Protected": "Yes" if st.session_state.get("hidden_pw") else "No",
             }
-            hide_pdf = export_any_tab("Hide Message", name, hide_pdf_data)
+            hide_pdf = export_any_tab("Hide Message", "Hidden_output", hide_pdf_data)
             st.download_button("📄 Download Hide Report PDF", hide_pdf,
                                file_name="Hide_Report.pdf", mime="application/pdf", key="pdf_hide")
+    except NameError:
+        pass
     except Exception as e:
-            st.warning(f"PDF export failed: {e}")
-
+        st.warning(f"PDF export failed: {e}")
 # ------------------------------------------------------------ compare
 with tab_compare:
     st.caption("Upload a file you believe is the original and a file you suspect was "
