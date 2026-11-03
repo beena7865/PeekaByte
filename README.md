@@ -47,20 +47,24 @@ Organize your forensic investigations into cases. Group related files, add descr
 
 ## How to Use
 
-### Windows
+### Live App (Recommended)
 
-1. Download `PeekaByte-v1.0.zip` from the [Releases](../../releases) section
-2. Extract the ZIP file to any folder
-3. Double-click `PeekaByte.exe`
-4. A terminal window will open — **do not close it**
-5. Open your browser and go to `http://localhost:8501`
-6. PeekaByte will load — start analyzing!
+PeekaByte is deployed on Streamlit Cloud — no installation needed!
 
-> **Note:** Windows may show a security warning the first time. Click **"More info"** → **"Run anyway"** to continue.
+👉 **[Open PeekaByte](https://peekabyte-abcgxaupbzdgal4dai2gng.streamlit.app/)**
 
-### Linux / macOS
+Just click the link and start using it in your browser. Works on Windows, Linux, macOS, and mobile.
 
-Currently available for Windows only. Linux and macOS support will be added in future releases.
+### Run Locally
+
+1. Clone this repository:
+   git clone https://github.com/beena7865/PeekaByte.git
+   cd PeekaByte
+2. Install dependencies:
+   pip install -r requirements.txt
+3. Run the app:
+   streamlit run app.py
+4. Open `http://localhost:8501` in your browser.
 
 ---
 
@@ -120,9 +124,8 @@ Currently available for Windows only. Linux and macOS support will be added in f
 
 ## System Requirements
 
-- Windows 10 or 11
-- 4 GB RAM minimum
-- No Python installation needed (standalone executable)
+- Any modern web browser (Chrome, Firefox, Edge, Safari)
+- For running locally: Python 3.8+
 
 ---
 
