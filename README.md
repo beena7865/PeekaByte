@@ -90,7 +90,7 @@ Just click the link and start using it in your browser. Works on Windows, Linux,
 ## Developer
 
 **Beena Siddique**
-B.Sc. Cyber Security — Chandigarh Group of Colleges, Landran
+B.Sc. Cyber Security
 
 - GitHub: [@beena7865](https://github.com/beena7865)
 ---
