@@ -12,3 +12,4 @@ PyMuPDF
 openpyxl
 python-docx
 pandas
+pyzbar
