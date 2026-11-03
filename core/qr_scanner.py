@@ -234,14 +234,11 @@ def scan_qr(data):
     # Try pyzbar as fallback (much better with real-world photos)
     if not results and HAS_PYZBAR:
         try:
-            pyz_results = pyzbar_decode(img)
+            pyz_results = pyzbar_decode(Image.open(io.BytesIO(data)))
             for obj in pyz_results:
                 text = obj.data.decode("utf-8", errors="replace")
                 if text:
-                    pts = None
-                    if obj.polygon:
-                        pts = np.array([[p.x, p.y] for p in obj.polygon], dtype=np.float32)
-                    results.append({"text": text, "points": pts})
+                    results.append({"text": text, "points": None})
         except Exception:
             pass
     if not results:
