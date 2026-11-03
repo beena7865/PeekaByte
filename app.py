@@ -185,7 +185,10 @@ with tab_scan:
             # ---- QR code scanner ----
             img_exts = (".png", ".jpg", ".jpeg", ".bmp", ".webp", ".gif", ".tif", ".tiff")
             if upload.name.lower().endswith(img_exts):
-                qr = scan_qr(data)
+                try:
+                    qr = scan_qr(data)
+                except Exception:
+                    qr = None
                 if qr and qr["found"]:
                     st.markdown("### QR Codes / Barcodes Found")
                     st.success(qr["note"])
