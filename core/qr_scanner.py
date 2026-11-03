@@ -231,6 +231,19 @@ def scan_qr(data):
                     pts = points[i] if points is not None and i < len(points) else None
                     results.append({"text": text, "points": pts})
 
+    # Try pyzbar as fallback (much better with real-world photos)
+    if not results and HAS_PYZBAR:
+        try:
+            pyz_results = pyzbar_decode(img)
+            for obj in pyz_results:
+                text = obj.data.decode("utf-8", errors="replace")
+                if text:
+                    pts = None
+                    if obj.polygon:
+                        pts = np.array([[p.x, p.y] for p in obj.polygon], dtype=np.float32)
+                    results.append({"text": text, "points": pts})
+        except Exception:
+            pass
     if not results:
         return {"found": False, "codes": [], "count": 0,
                 "note": "No QR codes found in this image."}
