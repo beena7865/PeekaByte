@@ -12,8 +12,13 @@ try:
 except ImportError:
     HAS_CV2 = False
 
-import numpy as np
+try:
+    from pyzbar.pyzbar import decode as pyzbar_decode
+    HAS_PYZBAR = True
+except Exception:
+    HAS_PYZBAR = False
 
+import numpy as np
 
 def identify_qr_type(text):
     t = text.strip()
